@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html> <!-- Используется html 5 версии -->
 <html lang="ru"> <!-- Язык сайта - русский -->
   <head>    
@@ -12,40 +14,21 @@
     <meta name="msapplication-TileColor" content="#000">
     <meta name="theme-color" content="#ffffff">
     <!-- Подключен файл со стандартными стилями бустрап -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    {% block title %}<title>Последние обновления на сайте</title>{% endblock title %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    {% block title %}{{title1}}{% endblock title %}
   </head>
   <body>
-{% block header %}
     <header>
-      <!-- Использованы классы бустрапа для создания типовой навигации с логотипом -->
-      <!-- В дальнейшем тут будет создано полноценное меню -->
-      <nav class="navbar navbar-light" style="background-color: lightskyblue">
-        <div class="container">
-          <a class="navbar-brand" href="index.html">
-            <img src="img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
-            <!-- тег span используется для добавления нужных стилей отдельным участкам текста -->
-            <span style="color:red">Ya</span>tube
-          </a>
-        </div>
-      </nav>      
+       {% include 'includes/header.html' %}  
     </header>
-{% endblock %}
     <main> 
 {% block content %}
       <!-- класс py-5 создает отступы сверху и снизу блока -->
 
 {% endblock %}
-    </main>
-{% block footer %}
-    <!-- Использованы классы бустрапа: -->
-    <!-- border-top: создаёт тонкую линию сверху блока -->
-    <!-- text-center: выравнивает текстовые блоки внутри блока по центру -->
-    <!-- py-3: контент внутри размещается с отступом сверху и снизу -->         
+    </main>        
     <footer class="border-top text-center py-3">
-      <!-- тег span используется для добавления нужных стилей отдельным участкам текста --> 
-      <p>© 2020 Copyright <span style="color:red">Ya</span>tube</p>    
+      {% include 'includes/footer.html' %}  
     </footer>
-{% endblock %}
   </body>
 </html>
