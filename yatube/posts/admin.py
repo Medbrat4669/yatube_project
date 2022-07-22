@@ -8,11 +8,11 @@ class PostAdmin(admin.ModelAdmin):
     # Перечисляем поля, которые должны отображаться в админке
     list_display = (
         'pk',
-        'text', 
-        'pub_date', 
-        'author', 
+        'text',
+        'pub_date',
+        'author',
         'group',
-        )
+    )
 
     list_editable = ('group',)
     search_fields = ('text',)
