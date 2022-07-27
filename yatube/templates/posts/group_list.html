@@ -4,14 +4,8 @@
 {% block content %}
 <div class="container py-5">     
   <h4>Записи сообщества: {{ group.description }}</h4>
-  <article>
-    {% for post in posts %}
-      {% include 'includes/post_pattern.html'%}
-      {% if not forloop.last %}
-      <hr>
-      {% endif %}
-      {% endfor %}
-  </article>
-  <hr>
+{% for post in posts %}
+  {% include 'includes/post_pattern.html'%}
+{% endfor %} 
 </div>  
 {% endblock %}

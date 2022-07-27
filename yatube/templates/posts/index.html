@@ -6,18 +6,8 @@
 {% block content %}
 <div class="container py-5">     
   <h1>Последние обновления на сайте</h1>
-  <article>
-    {% for post in posts %}
-      {% include 'includes/post_pattern.html'%}
-      {% if post.group %}   
-      <a href="{% url 'posts:group_list' post.group.slug %}">все записи сообщества</a>
-      {% endif %}
-      {% if not forloop.last %}
-      <hr>
-      {% endif %}
-      {% endfor %}  
-  </article>
-  
-  <hr>
+{% for post in posts %}
+  {% include 'includes/post_pattern.html'%}
+{% endfor %} 
 </div>  
 {% endblock %}
