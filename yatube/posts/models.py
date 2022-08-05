@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
 class Group(models.Model):
 
     title = models.CharField(max_length=200)
@@ -24,14 +23,16 @@ class Post(models.Model):
         blank=True,
         null=True,
         on_delete=models.CASCADE,
+        related_name='posts'
     )
-
+    
     group = models.ForeignKey(
         Group,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
+        related_name='groups',
     )
 
     class Meta:
-        ordering = ('-pub_date',)
+        ordering = ["-pub_date"]
