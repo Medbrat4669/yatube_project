@@ -2,9 +2,9 @@
 {% block title %}Профайл пользователя {{ author }}{% endblock %}
 {% block content %}
 <main>
-  <div class="container py-5">
-    <h1>Все записи пользователя {{ author.get_full_name }}</h1>
-    <h3>Всего постов: {{ count }} </h3>
+  <div class="container">
+    <h2>Все записи пользователя: {{ author.get_full_name }}</h2>
+    <h4>Всего постов: {{ count }} </h4>
     <article>
       {% for post in page_obj %}
       <ul>
