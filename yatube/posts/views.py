@@ -107,4 +107,3 @@ def post_edit(request, post_id):
         }
         return render(request, template, context)
     return redirect('posts:post_detail', post_id)
-    
