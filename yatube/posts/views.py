@@ -18,6 +18,7 @@ def index(request):
     }
     return render(request, template, context)
 
+
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     posts = Post.objects.filter(group=group)
@@ -31,6 +32,7 @@ def group_posts(request, slug):
         'page_obj': page_obj,
     }
     return render(request, template, context)
+
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
@@ -48,6 +50,7 @@ def profile(request, username):
     template = 'posts/profile.html'
 
     return render(request, template, context)
+
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -67,6 +70,7 @@ def post_detail(request, post_id):
 
     return render(request, template, context)
 
+
 @login_required
 def post_create(request):
     if request.method == 'POST':
@@ -81,6 +85,7 @@ def post_create(request):
     template = 'posts/create_post.html'
     context = {'form': form, 'groups': groups}
     return render(request, template, context)
+
 
 @login_required
 def post_edit(request, post_id):
@@ -102,3 +107,4 @@ def post_edit(request, post_id):
         }
         return render(request, template, context)
     return redirect('posts:post_detail', post_id)
+    
