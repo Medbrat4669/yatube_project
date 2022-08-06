@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
-
 {% block title %}
 Главная страница Yatube
 {% endblock title %}
+{% comment %}  {% block header %}Последние обновления на сайте{% endblock %}{% endcomment %}
+{% block content %}
+<div class="container py-5">     
+  {% comment %} <h1>Последние обновления на сайте</h1> {% endcomment %}
+{% for post in page_obj %}
+  {% include 'includes/post_pattern.html'%}
+{% endfor %} 
+{% include 'posts/includes/paginator.html' %}
+</div>  
+{% endblock %}
