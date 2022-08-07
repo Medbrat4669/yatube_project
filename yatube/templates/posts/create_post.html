@@ -1,58 +1,70 @@
 {% extends 'base.html' %}
 {% block title %}
 {% if is_edit %}
-Редактировать запись
+  Редактировать запись
 {% else %}
-Новый запись
+  Новая запись
 {% endif %}
-{{ group.title }}
 {% endblock %}
 {% block content %}
-<main>
+{% load user_filters %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-md-8 p-5">
         <div class="card">
           <div class="card-header">
             {% if is_edit %}
-            Редактировать запись
+              Редактировать запись
             {% else %}
-            Новая запись
+              Новая запись
             {% endif %}
           </div>
           <div class="card-body">
-            <form method="post" href="{% url 'posts:post_create' %}">
+          {% if is_edit %}
+            <form
+              method="post"
+              enctype="multipart/form-data"
+              action="{% url 'posts:post_edit' post_id=post.pk %}"
+            >
+          {% else %}
+            <form
+              method="post"
+              enctype="multipart/form-data"
+              action="{% url 'posts:post_create' %}"
+            >
+          {% endif %}
               {% csrf_token %}
-              <div class="form-group row my-3 p-3">
-                <label for="id_text">
-                  Текст записи
-                  <span class="required text-danger">*</span>
-                </label>
-                {{ form.text }}
-                <small id="id_text-help" class="form-text text-muted">
-                  Текст новой записи
-                </small>
-              </div>
-              <div class="form-group row my-3 p-3">
-                <label for="id_group">
-                  Сообщество
-                </label>
-                <select name="group" class="form-control" id="id_group">
-                  <option value="" selected>---------</option>
-                  {% for group in groups %}
-                  <option value="{{ group.pk }}" selected>{{ group.title }}</option>
-                  {% endfor %}
-                </select>
-                <small id="id_group-help" class="form-text text-muted">
-                  Группа, к которой будет относиться запись
-                </small>
-              </div>
+              {% for field in form %}
+                <div class="form-group row my-3 p-3">
+                  {% if not field.is_hidden and not nolabel %}
+                    <label for="{{ field.id_for_label }}">
+                      {{ field.label }}
+                      {% if field.field.required %}
+                        <span class="required text-danger">*</span>
+                      {% endif %}
+                    </label>
+                  {% endif %}
+                  {% if field.errors %}
+                    {{ field|addclass:'form-control is-invalid' }}
+                  {% elif form.is_bound %}
+                    {{ field|addclass:"form-control is-valid" }}
+                  {% else %}
+                    {{ field|addclass:'form-control' }}
+                  {% endif %}
+                  {% if field.help_text %}
+                    <small id="{{field.id_for_label}}-help"
+                      class="form-text text-muted">
+                      {{ field.help_text|safe }}
+                    </small>
+                  {% endif %}
+                </div>
+              {% endfor %}
               <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">
                   {% if is_edit %}
-                  Сохранить
+                    Сохранить
                   {% else %}
-                  Добавить
+                    Добавить
                   {% endif %}
                 </button>
               </div>
@@ -60,7 +72,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</main>
+    </div> 
+  </div> 
 {% endblock %}

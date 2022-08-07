@@ -1,16 +1,22 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.conf import settings
 
 from .forms import PostForm
 from .models import Post, Group, User
 
 
-def index(request):
-    posts = Post.objects.all()
-    paginator = Paginator(posts, 10)
+def paginator(request, object_list, per_page):
+    paginate = Paginator(object_list, per_page)
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginate.get_page(page_number)
+    return page_obj
+
+
+def index(request):
+    posts = Post.objects.select_related('author', 'group')
+    page_obj = paginator(request, posts, settings.SORT_POSTS)
     template = 'posts/index.html'
     context = {
         'posts': posts,
@@ -21,10 +27,8 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    posts = Post.objects.filter(group=group)
-    paginator = Paginator(posts, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    posts = group.groups.select_related('author')
+    page_obj =  paginator(request, posts, settings.SORT_POSTS)
     template = 'posts/group_list.html'
     context = {
         'group': group,
@@ -38,9 +42,7 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = author.posts.all()
     count = author.posts.count()
-    paginator = Paginator(posts, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator(request, posts, settings.SORT_POSTS)
     context = {
         'page_obj': page_obj,
         'count': count,
@@ -54,7 +56,6 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    pub_date = post.pub_date
     post_title = post.text[:30]
     author = post.author
     author_posts = author.posts.all().count()
@@ -63,7 +64,6 @@ def post_detail(request, post_id):
         'post_title': post_title,
         'author': author,
         'author_posts': author_posts,
-        'pub_date': pub_date,
     }
 
     template = 'posts/post_detail.html'
@@ -73,13 +73,12 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.save()
-            return redirect(f'/profile/{post.author}/', {'form': form})
+    form = PostForm(request.POST or None, files=request.FILES or None)
+    if form.is_valid():
+        post = form.save(commit=False)
+        post.author = request.user
+        post.save()
+        return redirect('posts:profile', request.user)
     form = PostForm()
     groups = Group.objects.all()
     template = 'posts/create_post.html'
@@ -89,21 +88,23 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
-    is_edit = True
     post = get_object_or_404(Post, pk=post_id)
-    author = post.author
-    groups = Group.objects.all()
-    form = PostForm(request.POST or None, instance=post)
+    form = PostForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=post
+    )
+    if post.author != request.user:
+        return redirect('posts:post_detail', post_id)
+    if form.is_valid():
+        edited_post = form.save(commit=False)
+        edited_post.author = request.user
+        edited_post.save()
+        return redirect('posts:post_detail', post_id)
+    context = {
+        'form': form,
+        'is_edit': True,
+        'post': post,
+    }
     template = 'posts/create_post.html'
-    if request.user == author:
-        if request.method == 'POST' and form.is_valid:
-            post = form.save()
-            return redirect('posts:post_detail', post_id)
-        context = {
-            'form': form,
-            'is_edit': is_edit,
-            'post': post,
-            'groups': groups,
-        }
-        return render(request, template, context)
-    return redirect('posts:post_detail', post_id)
+    return render(request, template, context)
