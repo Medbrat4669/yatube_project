@@ -98,7 +98,6 @@ def post_edit(request, post_id):
         return redirect('posts:post_detail', post_id)
     if form.is_valid():
         edited_post = form.save(commit=False)
-        edited_post.author = request.user
         edited_post.save()
         return redirect('posts:post_detail', post_id)
     context = {
