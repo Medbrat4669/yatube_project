@@ -4,11 +4,12 @@ from django.urls import reverse
 from ..forms import PostForm
 from ..models import Post, User
 
-###Думал запихнуть их в settings как мы делали с 'магическими цифрами', но думаю
-### что тесты могут меняться время от времени
+'''Думал запихнуть их в settings как мы делали с 'магическими цифрами', 
+но думаю, что тесты могут меняться время от времени '''
 TEST_USERNAME = 'test-user'
 TEST_POST_TEXT = 'Тест текст поста'
 TEST_POST_NEW_TEXT = 'Новый текст поста'
+
 
 class PostFormTests(TestCase):
     @classmethod
