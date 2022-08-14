@@ -19,8 +19,14 @@
               Новая запись
             {% endif %}
           </div>
-          
           <div class="card-body">
+
+            <form
+              method="post"
+              enctype="multipart/form-data"
+              action="{% url 'posts:post_create' %}"
+            >
+
               {% csrf_token %}
               {% for field in form %}
                 <div class="form-group row my-3 p-3">
