@@ -51,6 +51,11 @@ class PostViewsTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostViewsTests.user)
 
+    def post_check(self):
+        response = self.authorized_client
+        first_post = response.context['page_obj'][0]
+        self.assertEqual(first_post.text, TEST_POST_TEXT)
+
     def test_pages_use_correct_templates(self):
         """URL-адреса используют соответствующие шаблоны."""
         for reverse_name, template in PostViewsTests.pages_templates.items():
@@ -67,7 +72,6 @@ class PostViewsTests(TestCase):
         """Шаблон index сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse('posts:index'))
         first_post = response.context['page_obj'][0]
-        self.assertEqual(first_post.text, TEST_POST_TEXT)
         self.assertEqual(first_post.author, PostViewsTests.user)
         self.assertEqual(first_post.group, PostViewsTests.group)
 
@@ -80,7 +84,6 @@ class PostViewsTests(TestCase):
         self.assertEqual(response.context['group'].slug, TEST_GROUP_SLUG)
         self.assertEqual(
             response.context['group'].description, TEST_GROUP_DESCRIPTION)
-        self.assertEqual(first_post.text, TEST_POST_TEXT)
         self.assertEqual(first_post.author, PostViewsTests.user)
         self.assertEqual(first_post.group, PostViewsTests.group)
 
@@ -106,7 +109,6 @@ class PostViewsTests(TestCase):
             reverse('posts:profile', kwargs={'username': TEST_USERNAME}))
         first_post = response.context['page_obj'][0]
         self.assertEqual(response.context['author'].username, TEST_USERNAME)
-        self.assertEqual(first_post.text, TEST_POST_TEXT)
         self.assertEqual(first_post.author, PostViewsTests.user)
         self.assertEqual(first_post.group, PostViewsTests.group)
 

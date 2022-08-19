@@ -4,12 +4,18 @@ from http import HTTPStatus
 
 from ..models import Group, Post, User
 
+''' 
+Я сделал как ты  просил, чтобы  автор  побегал по страница
+Оставил все тесты как были, но  хз правильно ли, что ошибки показывать будет по тестам
+анонимного пользователя например
+(в принципе функционал же ошибка сможет показать )
+''' 
 TEST_USERNAME = 'test-user'
 TEST_POST_TEXT = 'Тест текст поста'
 TEST_GROUP_TITLE = 'Тест группа'
 TEST_GROUP_SLUG = 'test-slug'
 TEST_GROUP_DESCRIPTION = 'Тест описание группы'
-TEST_USER_NON_AUTHOR_USERNAME = 'test-empty-user'
+#TEST_USER_NON_AUTHOR_USERNAME = 'test-empty-user'
 
 
 class PostURLTests(TestCase):
@@ -50,9 +56,9 @@ class PostURLTests(TestCase):
         }
 
     def setUp(self):
-        self.guest_client = Client()
-        self.authorized_client = Client()
-        self.authorized_client.force_login(PostURLTests.user)
+        self.post_author = Client()
+        self.post_author.force_login(PostURLTests.user)
+
 
     def test_public_pages_exist_at_desired_locations(self):
         """
@@ -61,7 +67,7 @@ class PostURLTests(TestCase):
         """
         for page in PostURLTests.public_pages:
             with self.subTest(page=page):
-                response = self.guest_client.get(page)
+                response = self.post_author.get(page)
                 self.assertEqual(
                     response.status_code,
                     HTTPStatus.OK,
@@ -70,7 +76,7 @@ class PostURLTests(TestCase):
 
     def test_post_create_page_exists_at_desired_location_authorized(self):
         """Страница /create/ доступна авторизованному пользователю."""
-        response = self.authorized_client.get(
+        response = self.post_author.get(
             reverse('posts:post_create'))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -79,7 +85,7 @@ class PostURLTests(TestCase):
         Страница /create/ перенаправит анонимного пользователя
         на страницу логина.
         """
-        response = self.guest_client.get(
+        response = self.post_author.get(
             reverse('posts:post_create'))
         self.assertRedirects(
             response,
@@ -87,7 +93,7 @@ class PostURLTests(TestCase):
 
     def test_post_edit_page_exists_at_desired_location_author(self):
         """Страница /<post_id>/edit/ доступна автору поста."""
-        response = self.authorized_client.get(
+        response = self.post_author.get(
             reverse(
                 'posts:post_edit', kwargs={'post_id': PostURLTests.post.id}))
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -97,11 +103,7 @@ class PostURLTests(TestCase):
         Страница /<post_id>/edit/ перенаправит пользователя, не являющегося
         автором поста, на страницу с информацией о данном посте.
         """
-        non_author_user = User.objects.create_user(
-            username=TEST_USER_NON_AUTHOR_USERNAME)
-        non_author_client = Client()
-        non_author_client.force_login(non_author_user)
-        response = non_author_client.get(
+        response = self.post_author.get(
             reverse(
                 'posts:post_edit', kwargs={'post_id': PostURLTests.post.id}))
         self.assertRedirects(
@@ -116,19 +118,19 @@ class PostURLTests(TestCase):
         """
         post_edit_page = reverse(
             'posts:post_edit', kwargs={'post_id': PostURLTests.post.id})
-        response = self.guest_client.get(post_edit_page)
+        response = self.post_author.get(post_edit_page)
         self.assertRedirects(
             response,
             f"{reverse('users:login')}?next={post_edit_page}")
 
     def test_unexisting_page_is_unavailable(self):
         """Несуществующая страница недоступна (возвращает статус 404)."""
-        response = self.guest_client.get('/unexisting_page/')
+        response = self.post_author.get('/unexisting_page/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_urls_uses_correct_template(self):
         """URL-адреса используют соответствующие шаблоны."""
         for reverse_name, template in PostURLTests.pages_templates.items():
             with self.subTest(reverse_name=reverse_name):
-                response = self.authorized_client.get(reverse_name)
+                response = self.post_author.get(reverse_name)
                 self.assertTemplateUsed(response, template)
