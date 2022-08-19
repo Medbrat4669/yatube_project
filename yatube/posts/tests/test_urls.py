@@ -4,18 +4,18 @@ from http import HTTPStatus
 
 from ..models import Group, Post, User
 
-''' 
+'''
 Я сделал как ты  просил, чтобы  автор  побегал по страница
-Оставил все тесты как были, но  хз правильно ли, что ошибки показывать будет по тестам
+Оставил все тесты как были, но  хз правильно ли,
+что ошибки показывать будет по тестам
 анонимного пользователя например
 (в принципе функционал же ошибка сможет показать )
-''' 
+'''
 TEST_USERNAME = 'test-user'
 TEST_POST_TEXT = 'Тест текст поста'
 TEST_GROUP_TITLE = 'Тест группа'
 TEST_GROUP_SLUG = 'test-slug'
 TEST_GROUP_DESCRIPTION = 'Тест описание группы'
-#TEST_USER_NON_AUTHOR_USERNAME = 'test-empty-user'
 
 
 class PostURLTests(TestCase):
@@ -58,7 +58,6 @@ class PostURLTests(TestCase):
     def setUp(self):
         self.post_author = Client()
         self.post_author.force_login(PostURLTests.user)
-
 
     def test_public_pages_exist_at_desired_locations(self):
         """
