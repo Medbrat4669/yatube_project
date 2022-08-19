@@ -1,6 +1,7 @@
 from django.test import Client, TestCase
 from django.urls import reverse
 from django import forms
+from django.conf import settings
 
 from ..models import Group, Post, User
 
@@ -169,7 +170,7 @@ class PaginatorViewsTest(TestCase):
             description=TEST_GROUP_DESCRIPTION,
         )
         cls.total_posts_count = 13
-        cls.first_page_posts_count = 10
+        cls.first_page_posts_count = settings.SORT_POSTS
         cls.second_page_posts_count = 3
         Post.objects.bulk_create(Post(
             text=f'Тест пост {post}', author=cls.user, group=cls.group
