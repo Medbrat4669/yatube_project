@@ -55,6 +55,19 @@ class PostViewsTests(TestCase):
         response = self.authorized_client
         first_post = response.context['page_obj'][0]
         self.assertEqual(first_post.text, TEST_POST_TEXT)
+        self.assertEqual(first_post.author, PostViewsTests.user)
+
+    def checking_correct_post(self, post):
+        post = PostViewsTests.post
+        self.assertEqual(post.author, self.post.author)
+        self.assertEqual(post.text, self.post.text)
+        self.assertEqual(post.group, self.post.group)
+
+    def checking_correct_group(self, group):
+        group = PostViewsTests.group
+        self.assertEqual(group.title, self.group.title)
+        self.assertEqual(group.slug, self.group.slug)
+        self.assertEqual(group.description, self.group.description)
 
     def test_pages_use_correct_templates(self):
         """URL-адреса используют соответствующие шаблоны."""
@@ -72,7 +85,7 @@ class PostViewsTests(TestCase):
         """Шаблон index сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse('posts:index'))
         first_post = response.context['page_obj'][0]
-        self.assertEqual(first_post.author, PostViewsTests.user)
+        self.checking_correct_post(first_post)
         self.assertEqual(first_post.group, PostViewsTests.group)
 
     def test_group_list_page_show_correct_context(self):
@@ -80,11 +93,7 @@ class PostViewsTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:group_list', kwargs={'slug': TEST_GROUP_SLUG}))
         first_post = response.context['page_obj'][0]
-        self.assertEqual(response.context['group'].title, TEST_GROUP_TITLE)
-        self.assertEqual(response.context['group'].slug, TEST_GROUP_SLUG)
-        self.assertEqual(
-            response.context['group'].description, TEST_GROUP_DESCRIPTION)
-        self.assertEqual(first_post.author, PostViewsTests.user)
+        self.checking_correct_group(first_post)
         self.assertEqual(first_post.group, PostViewsTests.group)
 
     def test_post_is_not_in_the_wrong_group(self):
@@ -109,7 +118,6 @@ class PostViewsTests(TestCase):
             reverse('posts:profile', kwargs={'username': TEST_USERNAME}))
         first_post = response.context['page_obj'][0]
         self.assertEqual(response.context['author'].username, TEST_USERNAME)
-        self.assertEqual(first_post.author, PostViewsTests.user)
         self.assertEqual(first_post.group, PostViewsTests.group)
 
     def test_post_detail_page_show_correct_context(self):
