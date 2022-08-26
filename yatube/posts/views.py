@@ -9,6 +9,7 @@ from .models import Post, Group, User, Follow
 
 User = get_user_model()
 
+
 def paginator(request, object_list, per_page):
     paginate = Paginator(object_list, per_page)
     page_number = request.GET.get('page')

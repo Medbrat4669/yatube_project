@@ -76,7 +76,6 @@ class Comment(CreatedModel):
         'Текст комментария',
     )
 
-
     class Meta:
         ordering = ['created']
         verbose_name = 'Комментарии'

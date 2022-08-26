@@ -18,8 +18,9 @@ class PostForm(ModelForm):
             'image': 'Выберите изображение для загрузки.',
         }
 
+
 class CommentForm(ModelForm):
     class Meta:
         model = Comment
-        fields = ['text',]
-        labels = {'text': 'Текст',}
+        fields = ['text']
+        labels = {'text': 'Текст'}

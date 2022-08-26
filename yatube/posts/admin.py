@@ -37,9 +37,9 @@ class GroupAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
-    'pk', 
-    'post', 
-    'author', 
-    'text', 
-    'created',
+        'pk',
+        'post',
+        'author',
+        'text',
+        'created',
     )

@@ -24,6 +24,7 @@ TEST_FOLLOWING_USERNAME = 'test-following-user'
 TEST_FOLLOWER_POST_TEXT = 'Тестовый текст поста Подписчика'
 TEST_FOLLOWING_POST_TEXT = 'Тестовый текст поста Автора'
 
+
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostViewsTests(TestCase):
     @classmethod
@@ -276,6 +277,7 @@ class FollowViewsTest(TestCase):
             text=TEST_FOLLOWING_POST_TEXT,
             author=cls.following,
         )
+    
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
