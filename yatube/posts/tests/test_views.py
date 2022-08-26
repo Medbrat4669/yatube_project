@@ -277,7 +277,7 @@ class FollowViewsTest(TestCase):
             text=TEST_FOLLOWING_POST_TEXT,
             author=cls.following,
         )
-    
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
