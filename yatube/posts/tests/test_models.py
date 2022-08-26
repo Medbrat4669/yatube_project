@@ -1,12 +1,13 @@
 from django.test import TestCase
 
-from ..models import Group, Post, User
+from ..models import Group, Post, User, Comment
 
 TEST_USERNAME = 'test-user'
 TEST_POST_TEXT = 'Тест текст поста'
 TEST_GROUP_TITLE = 'Тест группа'
 TEST_GROUP_SLUG = 'test-slug'
 TEST_GROUP_DESCRIPTION = 'Тест описание группы'
+TEST_COMMENT_TEXT = 'Тестовый текст комментария'
 
 
 class PostModelTest(TestCase):
@@ -23,12 +24,24 @@ class PostModelTest(TestCase):
             author=cls.user,
             text=TEST_POST_TEXT,
         )
+        cls.comment = Comment.objects.create(
+            post=cls.post,
+            author=cls.user,
+            text=TEST_COMMENT_TEXT,
+        )
         cls.field_verboses = {
             cls.post: {
                 'text': 'Текст поста',
                 'pub_date': 'Дата публикации',
                 'author': 'Автор',
                 'group': 'Группа',
+                'image': 'Изображение'
+            },
+            cls.comment: {
+                'post': 'Пост',
+                'author': 'Автор комментария',
+                'text': 'Текст комментария',
+                'created': 'Дата создания',
             },
         }
 

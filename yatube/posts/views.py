@@ -1,11 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.conf import settings
 
-from .forms import PostForm
-from .models import Post, Group, User
+from .forms import PostForm, CommentForm
+from .models import Post, Group, User, Follow
 
+User = get_user_model()
 
 def paginator(request, object_list, per_page):
     paginate = Paginator(object_list, per_page)
@@ -42,11 +44,17 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = author.posts.all()
     count = author.posts.count()
+    following = False
+    if request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author
+    ).exists():
+        following = Follow.objects.get(user=request.user, author=author)
     page_obj = paginator(request, posts, settings.SORT_POSTS)
     context = {
         'page_obj': page_obj,
         'count': count,
         'author': author,
+        'following': following,
     }
 
     template = 'posts/profile.html'
@@ -57,13 +65,17 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     post_title = post.text[:30]
+    form = CommentForm(request.POST or None)
     author = post.author
     author_posts = author.posts.all().count()
+    comments = post.comments.all()
     context = {
         'post': post,
         'post_title': post_title,
         'author': author,
         'author_posts': author_posts,
+        'form': form,
+        'comments': comments,
     }
 
     template = 'posts/post_detail.html'
@@ -107,3 +119,47 @@ def post_edit(request, post_id):
     }
     template = 'posts/create_post.html'
     return render(request, template, context)
+
+
+@login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        comment.post = post
+        comment.save()
+    return redirect('posts:post_detail', post_id=post_id)
+
+
+@login_required
+def follow_index(request):
+    author_list = [follow.author for follow in request.user.follower.all()]
+    post_list = Post.objects.filter(author__in=author_list)
+    page_obj = paginator(request, post_list, settings.SORT_POSTS)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'posts/follow.html', context)
+
+
+@login_required
+def profile_follow(request, username):
+    author = get_object_or_404(User, username=username)
+    following = Follow.objects.filter(
+        user=request.user, author=author).exists()
+    if author != request.user and not following:
+        Follow.objects.create(user=request.user, author=author)
+    return redirect('posts:profile', username)
+
+
+@login_required
+def profile_unfollow(request, username):
+    author = get_object_or_404(User, username=username)
+    following = Follow.objects.filter(
+        user=request.user, author=author).exists()
+    if following:
+        following_object = Follow.objects.get(user=request.user, author=author)
+        following_object.delete()
+    return redirect('posts:profile', username)

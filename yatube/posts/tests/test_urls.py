@@ -90,3 +90,9 @@ class PostURLTests(TestCase):
             with self.subTest(reverse_name=reverse_name):
                 response = self.post_author.get(reverse_name)
                 self.assertTemplateUsed(response, template)
+
+    def test_follow_index_page_exists_at_desired_location_authorized(self):
+        """Страница /follow/ доступна автору."""
+        response = self.post_author.get(
+            reverse('posts:follow_index'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
