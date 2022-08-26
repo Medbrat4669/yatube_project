@@ -79,7 +79,7 @@ class Comment(CreatedModel):
     class Meta:
         ordering = ['created']
         verbose_name = 'Комментарии'
-        verbose_name_plural  = 'Комментарии'
+        verbose_name_plural = 'Комментарии'
 
     def __str__(self):
         return self.text
