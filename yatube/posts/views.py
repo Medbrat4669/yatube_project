@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 
 from .forms import PostForm, CommentForm
-from .models import Post, Group, User, Follow, Comment
+from .models import Post, Group, User, Follow
 
 User = get_user_model()
 
