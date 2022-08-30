@@ -85,24 +85,11 @@ class PostViewsTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostViewsTests.user)
 
-    def post_check(self):
-        response = self.authorized_client
-        first_post = response.context['page_obj'][0]
-        self.assertEqual(first_post.text, TEST_POST_TEXT)
-        self.assertEqual(first_post.author, PostViewsTests.user)
-        self.assertEqual(first_post.image, PostViewsTests.post.image)
-
     def checking_correct_post(self, post):
-        post = PostViewsTests.post
         self.assertEqual(post.author, self.post.author)
         self.assertEqual(post.text, self.post.text)
         self.assertEqual(post.group, self.post.group)
-
-    def checking_correct_group(self, group):
-        group = PostViewsTests.group
-        self.assertEqual(group.title, self.group.title)
-        self.assertEqual(group.slug, self.group.slug)
-        self.assertEqual(group.description, self.group.description)
+        self.assertEqual(post.image, self.post.image)
 
     def test_pages_use_correct_templates(self):
         """URL-адреса используют соответствующие шаблоны."""
@@ -128,7 +115,6 @@ class PostViewsTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:group_list', kwargs={'slug': TEST_GROUP_SLUG}))
         first_post = response.context['page_obj'][0]
-        self.checking_correct_group(first_post)
         self.assertEqual(first_post.group, PostViewsTests.group)
 
     def test_post_is_not_in_the_wrong_group(self):
@@ -191,7 +177,6 @@ class PostViewsTests(TestCase):
                 form_field = response.context['form'].fields[value]
                 self.assertIsInstance(form_field, expected)
         self.assertEqual(response.context['is_edit'], True)
-        self.assertEqual(response.context['post'].text, TEST_POST_TEXT)
         self.assertEqual(response.context['post'].author, PostViewsTests.user)
         self.assertEqual(response.context['post'].group, PostViewsTests.group)
         self.assertEqual(
