@@ -92,7 +92,7 @@ def post_create(request):
         post.save()
         return redirect('posts:profile', request.user)
     template = 'posts/create_post.html'
-    context = {'form': form }
+    context = {'form': form}
     return render(request, template, context)
 
 
