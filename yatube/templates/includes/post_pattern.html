@@ -17,7 +17,7 @@
   <p>
     {{ post.text }}
   </p>
-  <a href="{% url 'posts:post_detail' post.pk %}">подробная информация</a>
+  <a href="{% url 'posts:post_detail' post.pk  %}">подробная информация</a>
   <br>
   {% if post.group and not group %}
   <a href="{% url 'posts:group_list' post.group.slug %}">все записи сообщества</a>
